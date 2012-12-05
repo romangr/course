@@ -17,10 +17,13 @@ f=fopen("in.bmp","r");
 fread(&bfh,sizeof(bfh),1,f);
 fread(&bih,sizeof(bih),1,f);
 
+printf("%d\n", bfh.bfType);
 printf("%d\n", bfh.bfOffBits);
-if (bfh.bfOffBits!=54) {return false;}
+if (bfh.bfOffBits!=54) {return false;};
+printf("%d\n", bih.biSize); 
 printf("%d\n", bih.biPlanes); 
 printf("%d\n", bih.biCompression  );
+printf("%d\n", bih.biClrImportant );
 
 int padding = bih.biWidth*(bih.biBitCount/8)%4;	//find number of last bits was added to picture to complete a row 
 
@@ -51,7 +54,7 @@ int bytesForWork=bytesOnPixel;
 int applyArea=int(min(width*key, height*key));
 
 
-uchar red;
+double red;
 /*uchar green;
 uchar blue;*/
 if (bytesOnPixel==4) {bytesForWork=3;}
@@ -59,12 +62,21 @@ for (int i=0;i<height; i++) {
 	for (int j = 0;j<width; j++)
 	{
 		for (int n = 0; n < bytesOnPixel; n++)
-		{	switch (n) {
+		{	/*switch (n) {
 			case 0:picture[i][j][n]=255-picture[i][j][n]; break;
 			case 1:picture[i][j][n]=255-picture[i][j][n];   break;
 			case 2:picture[i][j][n]=255-picture[i][j][n]; break;
-			} 
+			} */
+			switch (n) {
+			case 0:red=picture[i][j][n]; break;
+			case 1:red+=picture[i][j][n];  break;
+			case 2:red+=picture[i][j][n];  break;
+			}
 		}
+		picture[i][j][0]=uchar(red/3);
+		picture[i][j][1]=uchar(red/3);
+		picture[i][j][2]=uchar(red/3);
+			red=0;
 	}
 }
 
